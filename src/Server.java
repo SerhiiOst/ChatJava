@@ -20,8 +20,9 @@ public class Server {
     }
 
     private static class Handler extends Thread{
-        String name;
+        String name, password;
         Socket socket;
+        Boolean logged = false;
         private BufferedReader in;
         private PrintWriter out;
 
@@ -35,16 +36,32 @@ public class Server {
                         socket.getInputStream()));
                 out = new PrintWriter(socket.getOutputStream(), true);
 
-                System.out.println("OK");
+                System.out.println("READY");
 
-                while (true){
+                do{
                     String line = in.readLine();
-                    System.out.println(line);
-                    out.println(line);
-                    break;
-                }
-            }catch (Exception ex){
+                    if (line.startsWith("REGISTER")){
+                        System.out.println("REGISTER OK");
+                        String[] splited = line.split("\\s+");
+                        name = splited[1];
+                        password = splited[2];
+                        out.println("OK");
+                        logged = true;
+                    } else if(line.startsWith("LOGIN")){
+                        System.out.println("LOGIN OK");
+                        String[] splited = line.split("\\s+");
+                        name = splited[1];
+                        password = splited[2];
+                        out.println("OK");
+                        logged = true;
+                    }
+                }while (!logged);
 
+//                while (true){
+//
+//                }
+            }catch (Exception ex){
+                System.out.println(ex.getMessage());
             }
         }
     }

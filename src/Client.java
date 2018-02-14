@@ -12,10 +12,10 @@ import java.net.Socket;
 
 public class Client extends Application {
 
-    String username, password;
-    BufferedReader in;
-    PrintWriter out;
-    Socket socket;
+    private String username, password;
+    private BufferedReader in;
+    private PrintWriter out;
+    private Socket socket;
 
     public static void main(String[] args) throws Exception {
         launch(args);
@@ -43,6 +43,7 @@ public class Client extends Application {
                 window.close();
                 Authorization();
             }catch (Exception ex){
+                System.out.println(ex.getMessage());
             }
         });
 
@@ -110,14 +111,25 @@ public class Client extends Application {
 
         register.setOnAction(e->{
             try{
-                while (true) {
-                    out.println("REGISTER");
-                    String line = in.readLine();
-                    register.setText(line);
-                    break;
+                out.println("REGISTER " + rUsername.getText() + " " + rPassword.getText());
+                    if(in.readLine().startsWith("OK")) {
+                        window.close();
+                        Chat(rUsername.getText());
+                    }
+            }catch (Exception ex){
+                System.out.println(ex.getMessage());
+            }
+        });
+
+        login.setOnAction(e->{
+            try{
+                out.println("LOGIN " + username.getText() + " " + password.getText());
+                if(in.readLine().startsWith("OK")) {
+                    window.close();
+                    Chat(username.getText());
                 }
             }catch (Exception ex){
-
+                System.out.println(ex.getMessage());
             }
         });
 
@@ -143,20 +155,18 @@ public class Client extends Application {
         window.show();
     }
 
-    private void SignUp(String username, String password){
-    }
-
-    private void Chat(){
+    private void Chat(String name){
+        username = name;
         Stage window = new Stage();
         window.setTitle("Telegram 2");
         window.setWidth(350);
-        window.setHeight(600);
 
         GridPane grid = new GridPane();
 
         TextField message = new TextField();
-        message.setText("Your message");
-        grid.add(new TextArea(), 0, 0);
+        message.setPromptText("Your message");
+        TextArea textArea = new TextArea();
+        grid.add(textArea, 0, 0);
         grid.add(message, 0, 1);
 
         Scene chatScene = new Scene(grid);
